@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assistive Yes/No Diagnostic</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="loading">Loading...</div>
+    <video id="webcam" autoplay muted style="display: none;"></video>
+    <main id="app" aria-live="polite">
+      <h1>Assistive Yes/No Diagnostic</h1>
+
+      <section id="questionCard" role="group" aria-labelledby="questionText">
+        <div id="questionText" class="question"></div>
+
+        <div class="controls">
+          <div id="countdown" class="countdown" aria-live="polite"></div>
+          <div id="status" class="status" aria-live="polite"></div>
+        </div>
+
+        <div class="answers">
+          <span class="chip yes" aria-hidden="true">YES</span>
+          <span class="chip no" aria-hidden="true">NO</span>
+        </div>
+      </section>
+
+      <div class="progress">
+        <span id="progressText"></span>
+      </div>
+
+      <div id="lastAnswer" class="last-answer" aria-live="polite"></div>
+
+      <div class="actions">
+        <button id="restartBtn" class="btn" type="button">Restart</button>
+      </div>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
