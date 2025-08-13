@@ -1,17 +1,36 @@
 
 
-const QUESTIONS = [
-  "Are you experiencing pain right now?",
-  "Do you need assistance with drinking water?",
-  "Are you feeling dizzy?",
-  "Do you want to rest?",
-  "Do you feel safe?",
-  "Do you need to call a caregiver?",
-  "Are you comfortable with the current temperature?",
-  "Do you need medication now?",
-  "Are you having trouble breathing?",
-  "Do you want to continue?"
-];
+let QUESTIONS = [];
+
+async function fetchQuestions() {
+  try {
+    const response = await fetch('../questionswithpriority.csv');
+    const csvData = await response.text();
+    const lines = csvData.split('\n').slice(1); // Skip header
+
+    const questions = lines.map(line => {
+      const parts = line.split(',');
+      if (parts.length < 4) return null; // Skip malformed lines
+      const [id, category, question, priority] = parts;
+      return { id, category, question, priority: priority ? priority.trim() : '' };
+    }).filter(q => q && q.question); // Filter out malformed or empty lines
+
+    const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+    questions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b].priority);
+
+    // Fisher-Yates shuffle to randomize within priorities
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+    
+    QUESTIONS = questions.slice(0, 10).map(q => q.question);
+  } catch (error) {
+    console.error('Error fetching or parsing questions:', error);
+    // Fallback to default questions
+  }
+}
+
 
 const WEBSOCKET_URL = 'ws://localhost:8765';
 const FRAME_INTERVAL_MS = 500;
@@ -150,6 +169,7 @@ dom.restartBtn.addEventListener('click', restart);
 
 async function initialize() {
   dom.loading.style.display = 'block';
+  await fetchQuestions();
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
