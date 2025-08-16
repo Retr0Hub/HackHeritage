@@ -1,5 +1,3 @@
-
-
 let QUESTIONS = [];
 
 async function fetchQuestions() {
